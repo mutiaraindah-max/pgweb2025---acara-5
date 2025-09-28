@@ -110,13 +110,13 @@
             map.addLayer(jalan); // Menambahkan GeoJSON Polyline Jalan ke dalam peta
         });
 
-        
-         //Geojson
-        
+
+        //Geojson
+
 
         // GeoJSON Polygon Jumlah Penduduk
         map.createPane('panejumlahpenduduk');
-        map.getPane("panejumlahpenduduk").style.zIndex = 301; 
+        map.getPane("panejumlahpenduduk").style.zIndex = 301;
         var jumlah_penduduk = L.geoJSON(null, {
             pane: 'panejumlahpenduduk',
             // Style
@@ -175,7 +175,37 @@
             jumlah_penduduk.addData(data); // Menambahkan data ke dalam GeoJSON Polygon Jumlah Penduduk
             map.addLayer(jumlah_penduduk); // Menambahkan GeoJSON Polygon Jumlah Penduduk ke dalam peta
         });
-    
+
+        map.createPane('paneSungai');
+        map.getPane("paneSungai").style.zIndex = 402;
+        var sungai = L.geoJSON(null, {
+            pane: "paneSungai",
+            // Style
+            style: function (feature) {
+                return {
+                    color: "blue",
+                    opacity: 1,
+                    weight: 2
+                };
+            },
+            // onEachFeature
+            onEachFeature: function (feature, layer) {
+                layer.on({
+                    mouseover: function (e) {
+                        layer.bindTooltip(feature.properties.NAMA_SUNGAI || "Sungai", {
+                            direction: "auto",
+                            sticky: true,
+                        });
+                    },
+                });
+            },
+        });
+
+        // Load data GeoJSON sungai
+        $.getJSON("data/Sungai.geojson", function (data) {
+            sungai.addData(data);
+            map.addLayer(sungai);
+        });
 
         // Control Layer
         var baseMaps = {
@@ -186,6 +216,7 @@
             "Toponimi": Toponimi,
             "Jalan": jalan,
             "Jumlah Penduduk": jumlah_penduduk,
+            "Sungai": sungai
         };
 
         var controllayer = L.control.layers(baseMaps, overlayMaps);
